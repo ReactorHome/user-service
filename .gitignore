@@ -4,7 +4,11 @@
 *.iws
 .floo
 .flooignore
+<<<<<<< Updated upstream
  
+=======
+
+>>>>>>> Stashed changes
 # Mac
 .DS_Store
  
