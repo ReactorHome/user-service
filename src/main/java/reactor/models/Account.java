@@ -13,7 +13,7 @@ public class Account {
     private String email;
     private String firstName;
     private String lastName;
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL})
     private List<NotificationId> notificationIdList;
 
     public Account() {

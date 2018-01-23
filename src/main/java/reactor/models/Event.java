@@ -15,8 +15,6 @@ public class Event {
     private Integer id;
     private LocalDateTime occurredAt;
     private String device;
-    @ManyToOne(cascade = {CascadeType.ALL})
-    private Group group;
     private String data;
     @Transient
     private JSONObject dataJson;
@@ -25,10 +23,9 @@ public class Event {
     public Event() {
     }
 
-    public Event(LocalDateTime occurredAt, String device, Group group, String data, JSONObject dataJson) {
+    public Event(LocalDateTime occurredAt, String device, String data, JSONObject dataJson) {
         this.occurredAt = occurredAt;
         this.device = device;
-        this.group = group;
         this.data = data;
         this.dataJson = dataJson;
     }
@@ -67,13 +64,6 @@ public class Event {
         this.device = device;
     }
 
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
 
     public JSONObject getDataJson() {
         return dataJson;

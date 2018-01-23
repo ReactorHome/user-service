@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.models.User;
 import reactor.repositories.AccountRepository;
@@ -17,12 +18,14 @@ public class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdap
     @Autowired
     AccountRepository accountRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
     }
 
     @Bean

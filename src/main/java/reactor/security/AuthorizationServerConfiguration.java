@@ -19,11 +19,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     private String userResource = "users";
     private String deviceResource = "devices";
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Autowired
     private ClientDetailsService clientDetailsService;
 
