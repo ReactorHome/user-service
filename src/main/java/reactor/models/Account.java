@@ -1,5 +1,7 @@
 package reactor.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -8,7 +10,9 @@ public class Account {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
+    @Column(unique = true)
     private String username;
+    @JsonIgnore
     private String password;
     private String email;
     private String firstName;
