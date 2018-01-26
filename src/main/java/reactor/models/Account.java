@@ -16,6 +16,7 @@ public class Account {
     private String password;
     private String email;
     private String firstName;
+
     private String lastName;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<NotificationId> notificationIdList;
@@ -77,5 +78,13 @@ public class Account {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public List<NotificationId> getNotificationIdList() {
+        return notificationIdList;
+    }
+
+    public void setNotificationIdList(List<NotificationId> notificationIdList) {
+        this.notificationIdList = notificationIdList;
     }
 }

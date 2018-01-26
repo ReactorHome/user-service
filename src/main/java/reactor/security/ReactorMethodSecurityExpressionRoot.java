@@ -24,7 +24,7 @@ public class ReactorMethodSecurityExpressionRoot extends SecurityExpressionRoot 
     //|| group.getOwner().getId().equals(account.getId())
     public boolean isGroupMember(Integer groupId){
         Account account = ((User)this.getPrincipal()).account;
-        return groupRepository.findById(groupId).map(group -> group.getAccountList().stream().anyMatch(account1 -> account1.getId().equals(account.getId()))).get();
+        return groupRepository.findById(groupId).map(group -> group.getAccountList().stream().anyMatch(account1 -> account1.getId().equals(account.getId())) || group.getOwner().getId().equals(account.getId())).get();
         //return account.getGroups().stream().anyMatch((group -> group.getId().equals(groupId)));
     }
 

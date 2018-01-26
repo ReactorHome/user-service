@@ -7,38 +7,32 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.exceptions.ModelNotFoundException;
-import reactor.models.Account;
+import reactor.models.Alert;
 import reactor.models.Group;
 import reactor.models.User;
-import reactor.repositories.AccountRepository;
 import reactor.repositories.GroupRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 @RestController
-public class GroupsController {
+public class AlertController {
 
     @Autowired
     private GroupRepository groupRepository;
 
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @GetMapping(path = "api/groups/{id}")
+    @GetMapping(path = "api/alerts/{id}")
     @PreAuthorize("isGroupMember(#groupId)")
-    public Group details(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
-        return groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
+    public List<Alert> index(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
+        return group.getAlerts();
     }
 
-    @PostMapping(path = "api/groups/{id}/users")
-    @PreAuthorize("isGroupOwner(#groupId)")
-    public ResponseEntity<?> addUserToGroup(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId, @RequestBody Account account){
+    @PostMapping("api/alerts/{id}")
+    public ResponseEntity<?> create(@PathVariable("id") Integer groupId, @RequestBody Alert alert){
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
-        account = accountRepository.findByUsername(account.getUsername()).orElseThrow(() -> new ModelNotFoundException("account"));
-        group.getAccountList().add(account);
+        group.getAlerts().add(alert);
         groupRepository.save(group);
+
         return new ResponseEntity(HttpStatus.CREATED);
     }
-
-
 }

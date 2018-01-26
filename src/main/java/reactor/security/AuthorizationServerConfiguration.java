@@ -1,6 +1,7 @@
 package reactor.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +19,9 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
     private String userResource = "users";
     private String deviceResource = "devices";
+
+    @Value("${reactor.service.secret}")
+    private String serviceSecret;
 
     @Autowired
     private ClientDetailsService clientDetailsService;
@@ -47,6 +51,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .authorities("ROLE_USER")
                 .scopes("write")
                 .resourceIds(userResource, deviceResource)
-                .autoApprove(true);
+                .autoApprove(true)
+            .and()
+                .withClient("service-user")
+                .authorizedGrantTypes("client_credentials")
+                .authorities("ROLE_SERVICE")
+                .scopes("write")
+                .resourceIds("service")
+                .autoApprove(true)
+                .secret(serviceSecret);
     }
 }

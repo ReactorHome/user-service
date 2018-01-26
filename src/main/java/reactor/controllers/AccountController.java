@@ -13,7 +13,7 @@ import reactor.models.Account;
 import reactor.repositories.AccountRepository;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "api/users")
 public class AccountController {
 
     private AccountRepository accountRepository;
