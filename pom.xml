@@ -6,7 +6,7 @@
 
     <groupId>com.myreactorhome</groupId>
     <artifactId>user-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -63,6 +63,38 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.3.7</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serverId>137312410501.dkr.ecr.us-east-2.amazonaws.com</serverId>
+                    <registryUrl>https://137312410501.dkr.ecr.us-east-2.amazonaws.com</registryUrl>
+                    <repository>137312410501.dkr.ecr.us-east-2.amazonaws.com/user-service</repository>
+                    <tag>${project.version}</tag>
+                    <contextDirectory>${project.basedir}</contextDirectory>
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-client</artifactId>
+                        <classifier>shaded</classifier>
+                        <version>8.10.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
