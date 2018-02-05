@@ -6,7 +6,7 @@
 
     <groupId>com.myreactorhome</groupId>
     <artifactId>user-service</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -78,8 +78,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <serverId>137312410501.dkr.ecr.us-east-2.amazonaws.com</serverId>
-                    <registryUrl>https://137312410501.dkr.ecr.us-east-2.amazonaws.com</registryUrl>
                     <repository>137312410501.dkr.ecr.us-east-2.amazonaws.com/user-service</repository>
                     <tag>${project.version}</tag>
                     <contextDirectory>${project.basedir}</contextDirectory>
