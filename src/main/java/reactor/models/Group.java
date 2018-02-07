@@ -1,5 +1,9 @@
 package reactor.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -12,7 +16,8 @@ public class Group {
     private Integer id;
     @OneToOne(cascade = CascadeType.ALL)
     private Account owner;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Account> accountList;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Face> faceList;
