@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.web.bind.annotation.*;
 import reactor.exceptions.UsernameAlreadyExists;
 import reactor.models.Account;
@@ -27,6 +28,9 @@ public class AccountController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    DefaultTokenServices tokenServices;
 
     public AccountController(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
@@ -53,5 +57,14 @@ public class AccountController {
     @GetMapping("me")
     public User me(@AuthenticationPrincipal User user){
         return user;
+    }
+
+    @DeleteMapping("me")
+    public ResponseEntity<?> deleteMe(@AuthenticationPrincipal User user, @RequestHeader("Authorization") String authHeader){
+        accountRepository.delete(user.account);
+        String authToken = authHeader.substring(7);
+        tokenServices.revokeToken(authToken);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
