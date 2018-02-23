@@ -44,9 +44,7 @@ public class GroupsController {
     }
 
     @PostMapping(path = "api/groups")
-    public Group createGroup(@AuthenticationPrincipal User user, @RequestBody String json) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode root = objectMapper.readTree(json);
+    public Group createGroup(@AuthenticationPrincipal User user, @RequestBody JsonNode root) {
 
         Group group = new Group();
         group.setOwner(user.account);
