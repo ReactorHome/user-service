@@ -1,5 +1,7 @@
 package reactor.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import reactor.models.User;
 import reactor.repositories.AccountRepository;
 import reactor.repositories.GroupRepository;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -40,5 +43,21 @@ public class GroupsController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
+    @PostMapping(path = "api/groups")
+    public Group createGroup(@AuthenticationPrincipal User user, @RequestBody String json) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode root = objectMapper.readTree(json);
+
+        Group group = new Group();
+        group.setOwner(user.account);
+        group.setName(root.get("name").asText());
+        String hubPhysicalId = root.get("hubPhysicalId").asText();
+        //Feign client call to register hub
+        String hubId = "123213";
+        group.setHubId(hubId);
+
+        groupRepository.save(group);
+        return group;
+    }
 
 }

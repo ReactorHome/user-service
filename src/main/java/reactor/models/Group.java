@@ -28,6 +28,9 @@ public class Group {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Alert> alerts;
 
+    private String hubId;
+    private String name;
+
     public Group() {
     }
 
@@ -77,5 +80,21 @@ public class Group {
 
     public void setAlerts(List<Alert> alerts) {
         this.alerts = alerts;
+    }
+
+    public String getHubId() {
+        return hubId;
+    }
+
+    public void setHubId(String hubId) {
+        this.hubId = hubId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
