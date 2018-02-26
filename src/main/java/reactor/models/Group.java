@@ -18,6 +18,7 @@ public class Group {
     private Account owner;
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @JoinTable(name = "groups_account_list", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "account_list_id")})
     private List<Account> accountList;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Face> faceList;
