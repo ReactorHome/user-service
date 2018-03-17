@@ -27,6 +27,7 @@ public class Account {
     private String lastName;
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<NotificationId> notificationIdList;
 
     @ManyToMany(fetch = FetchType.EAGER)

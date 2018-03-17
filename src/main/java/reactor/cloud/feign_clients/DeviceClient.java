@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-@Component
 @FeignClient(value = "device", url = "https://api.myreactorhome.com/devices")
 public interface DeviceClient {
 

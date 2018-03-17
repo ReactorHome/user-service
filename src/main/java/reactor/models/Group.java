@@ -1,6 +1,7 @@
 package reactor.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -21,12 +22,15 @@ public class Group {
     @JoinTable(name = "groups_account_list", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "account_list_id")})
     private List<Account> accountList;
     @OneToMany(cascade = {CascadeType.ALL})
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Face> faceList;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Event> events;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Alert> alerts;
 
     private String hubId;
