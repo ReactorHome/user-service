@@ -46,7 +46,7 @@ public class AccountController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("me/groups")
+    @GetMapping("/me/groups")
     public List<Group> groups(@AuthenticationPrincipal User user){
         List<Group> groups = new ArrayList<>(groupRepository.findByOwnerIs(user.account));
         groups.addAll(groupRepository.findByAccountListIs(user.account));
@@ -54,12 +54,12 @@ public class AccountController {
         return groups;
     }
 
-    @GetMapping("me")
+    @GetMapping("/me")
     public User me(@AuthenticationPrincipal User user){
         return user;
     }
 
-    @DeleteMapping("me")
+    @DeleteMapping("/me")
     public ResponseEntity<?> deleteMe(@AuthenticationPrincipal User user, @RequestHeader("Authorization") String authHeader){
         accountRepository.delete(user.account);
         String authToken = authHeader.substring(7);

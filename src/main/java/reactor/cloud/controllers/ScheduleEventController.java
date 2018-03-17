@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.cloud.entities.ScheduleEvent;
 import reactor.cloud.repositories.ScheduleEventRepository;
+import reactor.models.Group;
+import reactor.repositories.GroupRepository;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -19,10 +21,12 @@ import java.util.Optional;
 public class ScheduleEventController {
 
     private final ScheduleEventRepository scheduleEventRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public ScheduleEventController(ScheduleEventRepository scheduleEventRepository) {
+    public ScheduleEventController(ScheduleEventRepository scheduleEventRepository, GroupRepository groupRepository) {
         this.scheduleEventRepository = scheduleEventRepository;
+        this.groupRepository = groupRepository;
     }
 
     @GetMapping("/now")
@@ -43,63 +47,21 @@ public class ScheduleEventController {
     }
 
     @PostMapping("/new")
-    ResponseEntity createScheduleEvent(@RequestBody ScheduleEvent scheduleEvent){
+    ResponseEntity create(@RequestBody ScheduleEvent scheduleEvent){
         scheduleEventRepository.save(scheduleEvent);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/get/group/{id}")
-    ResponseEntity getByGroup(@PathVariable Integer id){
-        Optional<List<ScheduleEvent>> optional = null;
-
-
-        if(optional.isPresent()){
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                return new ResponseEntity<>(objectMapper.writeValueAsString(optional.get()), HttpStatus.OK);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>("Failed to convert result to JSON", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @GetMapping("/group/{id}")
+    List<ScheduleEvent> getByGroup(@PathVariable Integer id){
+        Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByGroupId(id);
+        return optional.orElse(null);
     }
 
-    @GetMapping("/get/device/{id}")
-    ResponseEntity getByDevice(@PathVariable Integer id){
-        Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findScheduleEventsByDeviceId(id);
-
-        if(optional.isPresent()){
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                return new ResponseEntity<>(objectMapper.writeValueAsString(optional.get()), HttpStatus.OK);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>("Failed to convert result to JSON", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @GetMapping("/device/{id}")
+    List<ScheduleEvent> getByDevice(@PathVariable Integer id){
+        Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByDeviceId(id);
+        return optional.orElse(null);
     }
-
-    @GetMapping("/get/second/after/{second}")
-    ResponseEntity getAfterMinute(@PathVariable Integer second){
-        Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findScheduleEventsByMinuteAfter(second);
-
-        if(optional.isPresent()){
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                return new ResponseEntity<>(objectMapper.writeValueAsString(optional.get()), HttpStatus.OK);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>("Failed to convert result to JSON", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-
 }

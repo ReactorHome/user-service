@@ -1,9 +1,6 @@
 package reactor.cloud.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class ScheduleEvent {
@@ -12,8 +9,10 @@ public class ScheduleEvent {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    private DeviceType deviceType;
+
     private Integer groupId;
-    private Integer deviceId;
+    private String deviceId;
     private String attribute_name;
     private String attribute_value;
     private Integer minute;
@@ -29,7 +28,8 @@ public class ScheduleEvent {
     public ScheduleEvent() {
     }
 
-    public ScheduleEvent(Integer groupId, Integer deviceId, String attribute_name, String attribute_value, Integer minute, Integer hour, boolean monday, boolean tuesday, boolean wednesday, boolean thursday, boolean friday, boolean saturday, boolean sunday) {
+    public ScheduleEvent(DeviceType deviceType, Integer groupId, String deviceId, String attribute_name, String attribute_value, Integer minute, Integer hour, boolean monday, boolean tuesday, boolean wednesday, boolean thursday, boolean friday, boolean saturday, boolean sunday) {
+        this.deviceType = deviceType;
         this.groupId = groupId;
         this.deviceId = deviceId;
         this.attribute_name = attribute_name;
@@ -53,6 +53,14 @@ public class ScheduleEvent {
         this.id = id;
     }
 
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(DeviceType deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public Integer getGroupId() {
         return groupId;
     }
@@ -61,11 +69,11 @@ public class ScheduleEvent {
         this.groupId = groupId;
     }
 
-    public Integer getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(Integer deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 

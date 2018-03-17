@@ -8,28 +8,30 @@ import java.util.Optional;
 
 public interface ScheduleEventRepository extends JpaRepository<ScheduleEvent, Integer> {
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByMondayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findByMondayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByTuesdayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findByTuesdayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByWednesdayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findByWednesdayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByThursdayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findByThursdayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByFridayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findByFridayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsBySaturdayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findBySaturdayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsBySundayAndHourAndMinute(
+    Optional<List<ScheduleEvent>> findBySundayAndHourAndMinute(
             boolean day, Integer hour, Integer minute_after);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByDeviceId(Integer deviceId);
+    Optional<List<ScheduleEvent>> findByDeviceId(Integer deviceId);
 
-    Optional<List<ScheduleEvent>> findScheduleEventsByMinuteAfter(Integer minute);
+    Optional<List<ScheduleEvent>> findByMinuteAfter(Integer minute);
+
+    Optional<List<ScheduleEvent>> findByGroupId(Integer groupId);
 }

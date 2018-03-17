@@ -1,9 +1,13 @@
 package reactor.cloud.schedule;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import reactor.cloud.entities.DeviceType;
 import reactor.cloud.entities.ScheduleEvent;
+import reactor.cloud.feign_clients.DeviceClient;
 import reactor.cloud.repositories.ScheduleEventRepository;
 
 import java.util.*;
@@ -14,13 +18,16 @@ public class ScheduledTasks {
 
     private final ScheduleEventRepository scheduleEventRepository;
 
+    private final DeviceClient deviceClient;
+
     private Queue<ScheduleEvent> eventQueue = new ConcurrentLinkedQueue<>();
 
     private final int refreshRate = 60 * 1000;
 
     @Autowired
-    public ScheduledTasks(ScheduleEventRepository scheduleEventRepository) {
+    public ScheduledTasks(ScheduleEventRepository scheduleEventRepository, DeviceClient deviceClient) {
         this.scheduleEventRepository = scheduleEventRepository;
+        this.deviceClient = deviceClient;
     }
 
     @Scheduled(fixedRate = refreshRate)
@@ -35,25 +42,25 @@ public class ScheduledTasks {
         Optional<List<ScheduleEvent>> optional = null;
         switch (dayOfWeek){
             case 1:
-                optional = scheduleEventRepository.findScheduleEventsBySundayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findBySundayAndHourAndMinute(true, hour, minute);
                 break;
             case 2:
-                optional = scheduleEventRepository.findScheduleEventsByMondayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findByMondayAndHourAndMinute(true, hour, minute);
                 break;
             case 3:
-                optional = scheduleEventRepository.findScheduleEventsByTuesdayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findByTuesdayAndHourAndMinute(true, hour, minute);
                 break;
             case 4:
-                optional = scheduleEventRepository.findScheduleEventsByWednesdayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findByWednesdayAndHourAndMinute(true, hour, minute);
                 break;
             case 5:
-                optional = scheduleEventRepository.findScheduleEventsByThursdayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findByThursdayAndHourAndMinute(true, hour, minute);
                 break;
             case 6:
-                optional = scheduleEventRepository.findScheduleEventsByFridayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findByFridayAndHourAndMinute(true, hour, minute);
                 break;
             case 7:
-                optional = scheduleEventRepository.findScheduleEventsBySaturdayAndHourAndMinute(true, hour, minute);
+                optional = scheduleEventRepository.findBySaturdayAndHourAndMinute(true, hour, minute);
                 break;
             default:
         }
@@ -66,7 +73,17 @@ public class ScheduledTasks {
         while (!eventQueue.isEmpty()){
             ScheduleEvent event = eventQueue.remove();
 
-            // execute event
+            ObjectNode device = deviceClient.getDevice(event.getDeviceId());
+            device.put(event.getAttribute_name(), event.getAttribute_value());
+
+            if(event.getDeviceType().equals(DeviceType.LIGHT)){
+                deviceClient.updateLight(event.getGroupId(), event.getDeviceId());
+            } else if(event.getDeviceType().equals(DeviceType.OUTLET)){
+                deviceClient.updateOutlet(event.getGroupId(), event.getDeviceId());
+            } else if(event.getDeviceType().equals(DeviceType.THERMOSTAT)){
+                deviceClient.updateThermostat(event.getGroupId(), event.getDeviceId());
+            }
+
             System.out.println(event.getAttribute_name());
         }
     }
