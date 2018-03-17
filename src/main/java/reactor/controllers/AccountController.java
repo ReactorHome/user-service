@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.exceptions.UsernameAlreadyExists;
 import reactor.models.Account;
 import reactor.models.Group;
+import reactor.models.GroupList;
 import reactor.models.User;
 import reactor.repositories.AccountRepository;
 import reactor.repositories.GroupRepository;
@@ -47,11 +48,11 @@ public class AccountController {
     }
 
     @GetMapping("/me/groups")
-    public List<Group> groups(@AuthenticationPrincipal User user){
+    public GroupList groups(@AuthenticationPrincipal User user){
         List<Group> groups = new ArrayList<>(groupRepository.findByOwnerIs(user.account));
         groups.addAll(groupRepository.findByAccountListIs(user.account));
 
-        return groups;
+        return new GroupList(groups);
     }
 
     @GetMapping("/me")

@@ -6,7 +6,7 @@
 
     <groupId>com.myreactorhome</groupId>
     <artifactId>user-service</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -52,10 +52,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
         </dependency>
     </dependencies>
 
