@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping("/api/cloud/schedule")
 public class ScheduleEventController {
 
     private final ScheduleEventRepository scheduleEventRepository;
@@ -60,7 +60,7 @@ public class ScheduleEventController {
     }
 
     @GetMapping("/device/{id}")
-    List<ScheduleEvent> getByDevice(@PathVariable Integer id){
+    List<ScheduleEvent> getByDevice(@PathVariable String id){
         Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByDeviceId(id);
         return optional.orElse(null);
     }
