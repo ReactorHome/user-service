@@ -69,7 +69,7 @@ public class ReactorResourceServerConfiguration {
                     .antMatchers(HttpMethod.GET, "/events/{id}").authenticated()
                     .antMatchers("/notifications/**").authenticated()
                     .antMatchers("/groups/**").authenticated()
-                    .antMatchers("/cloud/**").authenticated();
+                    .antMatchers("/cloud/**").permitAll();
 
                 http.csrf().disable();
             }
