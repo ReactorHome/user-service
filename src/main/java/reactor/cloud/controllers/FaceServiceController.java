@@ -27,7 +27,7 @@ public class FaceServiceController {
 
     @PostMapping("/test")
     @Headers("Content-Type: multipart/form-data")
-    ResponseEntity create(@RequestParam("image") MultipartFile image) throws IOException {
+    String create(@RequestParam("image") MultipartFile image) throws IOException {
         System.out.println("\n\nREEEEEEEEEEEEEEEEEEEEEEEEEE\n\n");
 
         String fileName = UUID.randomUUID().toString() + image.getOriginalFilename();
@@ -36,7 +36,7 @@ public class FaceServiceController {
 
         File file = new File("faces/" + fileName);
 
-        return faceClient.upload(file);
+        return faceClient.upload(image);
     }
 
 }

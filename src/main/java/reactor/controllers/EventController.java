@@ -28,10 +28,8 @@ public class EventController {
     @GetMapping("api/events/{id}")
     @PreAuthorize("isGroupMember(#groupId)")
     public List<Event> index(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
-        Event event = new Event(LocalDateTime.now(), "32422ajgrngadgsnflngs;ladadgsnl");
-        eventRepository.save(event);
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
-        group.getEvents().add(event);
+
         return group.getEvents();
     }
 

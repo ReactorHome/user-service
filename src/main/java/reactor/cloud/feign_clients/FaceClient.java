@@ -1,6 +1,8 @@
 package reactor.cloud.feign_clients;
 
+import feign.Body;
 import feign.Headers;
+import feign.Logger;
 import feign.Param;
 import feign.form.spring.SpringFormEncoder;
 import org.springframework.beans.factory.ObjectFactory;
@@ -9,6 +11,7 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.cloud.netflix.feign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +22,19 @@ import feign.codec.Encoder;
 
 import java.io.File;
 
-@FeignClient(value = "face", url = "http://0.0.0.0:5000")
+@FeignClient(value = "face", url = "http://0.0.0.0:5000", configuration = MultipartSupportConfig.class)
 public interface FaceClient {
 
-    @PostMapping(path = "upload")
-    @Headers("Content-Type: image/jpeg")
-    ResponseEntity upload(/*@RequestHeader("Authorization") String token, */@Param("image") File image);
+    @PostMapping(value = "upload", consumes = "multipart/form-data")
+    @Headers("Content-Type: multipart/form-data")
+    String upload(/*@RequestHeader("Authorization") String token, */@Param("image") MultipartFile image);
 
-
+    @Configuration
+    public class FaceConfiguration {
+        @Bean
+        Logger.Level feignLoggerLevel() {
+            return Logger.Level.FULL;
+        }
+    }
 }
 
