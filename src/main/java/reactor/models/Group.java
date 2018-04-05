@@ -15,7 +15,7 @@ public class Group {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     private Account owner;
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)

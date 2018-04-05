@@ -6,13 +6,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.exceptions.ModelNotFoundException;
+import reactor.feign_clients.HubClient;
 import reactor.models.Account;
 import reactor.models.Group;
 import reactor.models.User;
 import reactor.repositories.AccountRepository;
 import reactor.repositories.GroupRepository;
+
+import java.util.HashMap;
 
 @RestController
 public class GroupsController {
@@ -22,6 +27,9 @@ public class GroupsController {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private HubClient hubClient;
 
     @GetMapping(path = "api/groups/{id}")
     @PreAuthorize("isGroupMember(#groupId)")
@@ -40,17 +48,26 @@ public class GroupsController {
     }
 
     @PostMapping(path = "api/groups")
-    public Group createGroup(@AuthenticationPrincipal User user, @RequestBody JsonNode root) {
+    public Group createGroup(@AuthenticationPrincipal User user, @RequestBody JsonNode root, OAuth2Authentication auth) {
+        final OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+        String token = details.getTokenValue();
+        token = "Bearer " + token;
 
         Group group = new Group();
         group.setOwner(user.account);
         group.setName(root.get("name").asText());
-        String hubPhysicalId = root.get("hubPhysicalId").asText();
-        //Feign client call to register hub
-        String hubId = "123213";
-        group.setHubId(hubId);
-
         groupRepository.save(group);
+
+        String hubPhysicalId = root.get("hub_hardware_id").asText();
+
+        HashMap<String, Object> hub = new HashMap<>();
+        hub.put("hardware_id", hubPhysicalId);
+        hub.put("group_id", group.getId());
+
+        String hubId = hubClient.registerHub(token, hub);
+        group.setHubId(hubId);
+        groupRepository.save(group);
+
         return group;
     }
 
