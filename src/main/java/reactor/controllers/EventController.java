@@ -13,6 +13,7 @@ import reactor.models.User;
 import reactor.repositories.EventRepository;
 import reactor.repositories.GroupRepository;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,9 +35,10 @@ public class EventController {
     }
 
     @PostMapping("service/events/{id}/{device}")
-    public ResponseEntity<?> create(@PathVariable("id") Integer groupId, @PathVariable("device") String device){
+    public ResponseEntity<?> create(@PathVariable("id") Integer groupId, @PathVariable("device") String device, @RequestBody(required = false) String json){
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
-        Event event = new Event(LocalDateTime.now(), device);
+        Event event = new Event(Timestamp.valueOf(LocalDateTime.now()), device, json);
+        eventRepository.save(event);
         group.getEvents().add(event);
         groupRepository.save(group);
 
