@@ -12,7 +12,9 @@ import reactor.models.Group;
 import reactor.models.User;
 import reactor.repositories.GroupRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AlertController {
@@ -22,9 +24,12 @@ public class AlertController {
 
     @GetMapping(path = "api/alerts/{id}")
     @PreAuthorize("isGroupMember(#groupId)")
-    public List<Alert> index(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
+    public Map<String, Object> index(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
-        return group.getAlerts();
+        Map<String, Object> data = new HashMap<>();
+        data.put("alerts", group.getAlerts());
+
+        return data;
     }
 
     @PostMapping("api/alerts/{id}")

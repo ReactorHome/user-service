@@ -15,7 +15,9 @@ import reactor.repositories.GroupRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class EventController {
@@ -28,10 +30,12 @@ public class EventController {
 
     @GetMapping("api/events/{id}")
     @PreAuthorize("isGroupMember(#groupId)")
-    public List<Event> index(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
+    public Map<String, Object> index(@AuthenticationPrincipal User user, @PathVariable("id") Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
+        Map<String, Object> data = new HashMap<>();
+        data.put("events", group.getEvents());
 
-        return group.getEvents();
+        return data;
     }
 
     @PostMapping("service/events/{id}/{device}")
