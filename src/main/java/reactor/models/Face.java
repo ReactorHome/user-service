@@ -1,9 +1,8 @@
 package reactor.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 
 @Entity
 public class Face {
@@ -13,7 +12,10 @@ public class Face {
     private Integer id;
     private boolean safe;
     private String name;
+    @Column
     private String faceData;
+    @Transient
+    private String rawData;
 
     public Face() {
     }
@@ -54,5 +56,13 @@ public class Face {
 
     public void setFaceData(String faceData) {
         this.faceData = faceData;
+    }
+
+    public String getRawData(){
+        return rawData;
+    }
+
+    public void setRawData(String rawData){
+        this.rawData = rawData;
     }
 }
