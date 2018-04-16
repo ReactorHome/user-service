@@ -10,6 +10,7 @@ import java.util.Comparator;
 
 public class FaceUtility {
 
+    private final static double threshold = 0.45;
 
     public static double[] rawToArray(String raw) {
         raw = raw.substring(1, raw.length()-1);
@@ -27,6 +28,26 @@ public class FaceUtility {
         }
 
         return Math.sqrt(sum);
+    }
+
+    public static String findSimilar(double[] arr, List<Face> faces){
+        double minDist = -1;
+        String minName = "";
+
+        for(Face face : faces){
+            double faceDist = distanceBetween(arr, rawToArray(face.getFaceData()));
+
+            if(faceDist < threshold && (minDist == -1 || faceDist < minDist)){
+                minDist = faceDist;
+                minName = face.getName();
+            }
+        }
+
+        if(minDist == -1){
+            return "";
+        }
+
+        return minName;
     }
 
     public static boolean isSafe(String rawData, List<Face> faces){
@@ -53,8 +74,6 @@ public class FaceUtility {
                 safeSum += 1 / d;
             else
                 safeSum -= 1 / d;
-            System.out.println(d);
-            System.out.println(((Face)sortedFaces[i]).getName());
         }
         System.out.println("sum of " + k + " total nearest faces: " + safeSum);
         return safeSum > 0;

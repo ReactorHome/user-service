@@ -12,15 +12,17 @@ public class Alert {
     private Integer id;
     private Integer types;
     private String data;
+    private String faceData;
     @Transient
     private JSONObject dataJson;
 
     public Alert() {
     }
 
-    public Alert(Integer types, String data, JSONObject dataJson) {
+    public Alert(Integer types, String data, String faceData, JSONObject dataJson) {
         this.types = types;
         this.data = data;
+        this.faceData = faceData;
         this.dataJson = dataJson;
     }
 
@@ -45,9 +47,15 @@ public class Alert {
     }
 
     public void setData(String data) {
-        dataJson = new JSONObject(data);
-
         this.data = data;
+    }
+
+    public String getFaceData() {
+        return faceData;
+    }
+
+    public void setFaceData(String faceData) {
+        this.faceData = faceData;
     }
 
     public JSONObject getDataJson() {

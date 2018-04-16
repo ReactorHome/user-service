@@ -22,7 +22,7 @@ import feign.codec.Encoder;
 
 import java.io.File;
 
-@FeignClient(value = "face", url = "http://0.0.0.0:5000", configuration = MultipartSupportConfig.class)
+@FeignClient(value = "face", url = "https://api.myreactorhome.com/face", configuration = MultipartSupportConfig.class)
 public interface FaceClient {
 
     @PostMapping(value = "upload", consumes = "multipart/form-data")
