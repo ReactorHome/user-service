@@ -1,6 +1,7 @@
 package reactor.cloud.controllers;
 
 import feign.Headers;
+import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,11 @@ import reactor.models.Group;
 import reactor.repositories.AlertRepository;
 import reactor.repositories.GroupRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,7 +77,7 @@ public class FaceServiceController {
             }
 
 
-            Alert alert = new Alert(0, data, raw, null);
+            Alert alert = new Alert(0, data, raw, fileName, System.currentTimeMillis(), null);
             group.getAlerts().add(alert);
             groupRepository.save(group);
             System.out.println(data);
@@ -83,7 +85,7 @@ public class FaceServiceController {
             return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e){
             String data = "WARNING: A visitor was detected but an error occurred";
-            Alert alert = new Alert(0, data, null, null);
+            Alert alert = new Alert(0, data, null, null, 0, null);
             group.getAlerts().add(alert);
             groupRepository.save(group);
 
@@ -96,6 +98,15 @@ public class FaceServiceController {
         faceRepository.save(face);
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/image/{filename:.+}", produces = "image/*")
+    @Headers("Content-Type: image/*")
+    ResponseEntity image(@PathVariable String filename) throws IOException {
+//        File image = new File("faces/" + filename);
+//        return image;
+        System.out.println(Arrays.toString(Files.readAllBytes(Paths.get("faces/" + filename))));
+        return new ResponseEntity(Arrays.toString(Files.readAllBytes(Paths.get("faces/" + filename))), HttpStatus.OK);
     }
 
     @GetMapping("/count")

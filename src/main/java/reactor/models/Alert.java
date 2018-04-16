@@ -13,16 +13,20 @@ public class Alert {
     private Integer types;
     private String data;
     private String faceData;
+    private String filename;
+    private long created;
     @Transient
     private JSONObject dataJson;
 
     public Alert() {
     }
 
-    public Alert(Integer types, String data, String faceData, JSONObject dataJson) {
+    public Alert(Integer types, String data, String faceData, String filename, long created, JSONObject dataJson) {
         this.types = types;
         this.data = data;
         this.faceData = faceData;
+        this.filename = filename;
+        this.created = created;
         this.dataJson = dataJson;
     }
 
@@ -64,5 +68,21 @@ public class Alert {
 
     public void setDataJson(JSONObject dataJson) {
         this.dataJson = dataJson;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public long getCreated() {
+        return created;
+    }
+
+    public void setCreated(long created) {
+        this.created = created;
     }
 }
