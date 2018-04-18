@@ -8,7 +8,7 @@ public class ScheduleEvent {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
-
+    private String deviceName;
     private DeviceType deviceType;
 
     private Integer groupId;
@@ -28,7 +28,8 @@ public class ScheduleEvent {
     public ScheduleEvent() {
     }
 
-    public ScheduleEvent(DeviceType deviceType, Integer groupId, String deviceId, String attribute_name, String attribute_value, Integer minute, Integer hour, boolean monday, boolean tuesday, boolean wednesday, boolean thursday, boolean friday, boolean saturday, boolean sunday) {
+    public ScheduleEvent(String deviceName, DeviceType deviceType, Integer groupId, String deviceId, String attribute_name, String attribute_value, Integer minute, Integer hour, boolean monday, boolean tuesday, boolean wednesday, boolean thursday, boolean friday, boolean saturday, boolean sunday) {
+        this.deviceName = deviceName;
         this.deviceType = deviceType;
         this.groupId = groupId;
         this.deviceId = deviceId;
@@ -163,5 +164,13 @@ public class ScheduleEvent {
 
     public void setSunday(boolean sunday) {
         this.sunday = sunday;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 }

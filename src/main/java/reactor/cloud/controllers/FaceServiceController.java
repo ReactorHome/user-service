@@ -1,7 +1,6 @@
 package reactor.cloud.controllers;
 
 import feign.Headers;
-import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -21,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,7 +63,6 @@ public class FaceServiceController {
             String data = "";
 
             Face matchFace = FaceUtility.findSimilar(faceData, group.getFaceList());
-            System.out.println("Match: " + matchFace.getName());
             boolean isSafe = FaceUtility.isSafe(raw, group.getFaceList());
             if (matchFace != null) {
                 if (matchFace.isSafe()) data = "ALERT: ";
@@ -82,7 +78,6 @@ public class FaceServiceController {
             Alert alert = new Alert(0, data, raw, fileName, System.currentTimeMillis(), null);
             group.getAlerts().add(alert);
             groupRepository.save(group);
-            System.out.println(data);
 
             return new ResponseEntity(HttpStatus.OK);
         } catch (Exception e){
@@ -112,33 +107,9 @@ public class FaceServiceController {
     }
 
     @GetMapping(value = "/image/{filename:.+}")
-//    @Headers("Content-Type: image/*")
     FileSystemResource image(@PathVariable String filename) throws IOException {
         File image = new File("faces/" + filename);
-//        return image;
-        System.out.println(Arrays.toString(Files.readAllBytes(Paths.get("faces/" + filename))));
+
         return new FileSystemResource(image);
     }
-
-    @GetMapping("/count")
-    List count() {
-        Group group = groupRepository.findById(1).get();
-
-        return group.getFaceList();
-    }
-
-    @PostMapping("/match")
-    @Headers("Content-Type: multipart/form-data")
-    String match(@RequestParam("image") MultipartFile image) throws IOException {
-        String raw = faceClient.upload(image);
-        double[] arr = FaceUtility.rawToArray(raw);
-
-        return FaceUtility.findSimilar(arr, faceRepository.findAll()).getName();
-    }
-
-//    @PostMapping("/delete")
-//    ResponseEntity delete() {
-//        faceRepository.deleteAll();
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
 }

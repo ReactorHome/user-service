@@ -18,29 +18,10 @@ import java.util.*;
 public class ScheduleEventController {
 
     private final ScheduleEventRepository scheduleEventRepository;
-    private final GroupRepository groupRepository;
 
     @Autowired
-    public ScheduleEventController(ScheduleEventRepository scheduleEventRepository, GroupRepository groupRepository) {
+    public ScheduleEventController(ScheduleEventRepository scheduleEventRepository) {
         this.scheduleEventRepository = scheduleEventRepository;
-        this.groupRepository = groupRepository;
-    }
-
-    @GetMapping("/now")
-    ResponseEntity getNow(){
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        int hour = c.get(Calendar.HOUR);
-        int minute = c.get(Calendar.MINUTE);
-        int second = c.get(Calendar.SECOND);
-
-        System.out.println("day:\t" + dayOfWeek);
-        System.out.println("hour:\t" + hour);
-        System.out.println("min:\t" + minute);
-        System.out.println("sec:\t" + second);
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("/new")
