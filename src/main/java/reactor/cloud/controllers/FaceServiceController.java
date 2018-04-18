@@ -3,6 +3,7 @@ package reactor.cloud.controllers;
 import feign.Headers;
 import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,16 +65,17 @@ public class FaceServiceController {
 
             String data = "";
 
-            String match = FaceUtility.findSimilar(faceData, group.getFaceList());
+            Face matchFace = FaceUtility.findSimilar(faceData, group.getFaceList());
+            System.out.println("Match: " + matchFace.getName());
             boolean isSafe = FaceUtility.isSafe(raw, group.getFaceList());
-            if (!match.equals("")) {
-                if (isSafe) data = "ALERT: ";
+            if (matchFace != null) {
+                if (matchFace.isSafe()) data = "ALERT: ";
                 else data = "WARNING: ";
-                data += match + " was likely detected by your camera!";
+                data += matchFace.getName() + " likely detected!";
             } else if (isSafe) {
-                data = "ALERT: A visitor was detected that was likely safe.";
+                data = "ALERT: Safe visitor detected.";
             } else {
-                data = "WARNING: A visitor was detected that was likely unsafe.";
+                data = "WARNING: Unsafe visitor detected.";
             }
 
 
@@ -95,18 +97,27 @@ public class FaceServiceController {
 
     @PostMapping("/save")
     ResponseEntity save(@RequestBody Face face) {
-        faceRepository.save(face);
+        int groupNum = 1;
+        Optional<Group> groupOptional = groupRepository.findById(groupNum);
+        if(!groupOptional.isPresent()) {
+            return new ResponseEntity(HttpStatus.PAYLOAD_TOO_LARGE);
+        }
+
+        Group group = groupOptional.get();
+
+        group.getFaceList().add(face);
+        groupRepository.save(group);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/image/{filename:.+}", produces = "image/*")
-    @Headers("Content-Type: image/*")
-    ResponseEntity image(@PathVariable String filename) throws IOException {
-//        File image = new File("faces/" + filename);
+    @GetMapping(value = "/image/{filename:.+}")
+//    @Headers("Content-Type: image/*")
+    FileSystemResource image(@PathVariable String filename) throws IOException {
+        File image = new File("faces/" + filename);
 //        return image;
         System.out.println(Arrays.toString(Files.readAllBytes(Paths.get("faces/" + filename))));
-        return new ResponseEntity(Arrays.toString(Files.readAllBytes(Paths.get("faces/" + filename))), HttpStatus.OK);
+        return new FileSystemResource(image);
     }
 
     @GetMapping("/count")
@@ -122,7 +133,7 @@ public class FaceServiceController {
         String raw = faceClient.upload(image);
         double[] arr = FaceUtility.rawToArray(raw);
 
-        return FaceUtility.findSimilar(arr, faceRepository.findAll());
+        return FaceUtility.findSimilar(arr, faceRepository.findAll()).getName();
     }
 
 //    @PostMapping("/delete")

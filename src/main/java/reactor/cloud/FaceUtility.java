@@ -30,24 +30,25 @@ public class FaceUtility {
         return Math.sqrt(sum);
     }
 
-    public static String findSimilar(double[] arr, List<Face> faces){
+    public static Face findSimilar(double[] arr, List<Face> faces){
         double minDist = -1;
-        String minName = "";
+        Face minFace = null;
 
         for(Face face : faces){
             double faceDist = distanceBetween(arr, rawToArray(face.getFaceData()));
+            System.out.println(face.getName() + ": " + faceDist);
 
             if(faceDist < threshold && (minDist == -1 || faceDist < minDist)){
                 minDist = faceDist;
-                minName = face.getName();
+                minFace = face;
             }
         }
 
-        if(minDist == -1){
-            return "";
+        if(minFace == null){
+            return null;
         }
 
-        return minName;
+        return minFace;
     }
 
     public static boolean isSafe(String rawData, List<Face> faces){

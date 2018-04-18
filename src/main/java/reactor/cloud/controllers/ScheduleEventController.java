@@ -11,10 +11,7 @@ import reactor.cloud.repositories.ScheduleEventRepository;
 import reactor.models.Group;
 import reactor.repositories.GroupRepository;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/cloud/schedule")
@@ -54,14 +51,18 @@ public class ScheduleEventController {
     }
 
     @GetMapping("/group/{id}")
-    List<ScheduleEvent> getByGroup(@PathVariable Integer id){
+    HashMap<String,List> getByGroup(@PathVariable Integer id){
         Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByGroupId(id);
-        return optional.orElse(null);
+        HashMap<String, List> map = new HashMap<>();
+        map.put("events",optional.orElse(null));
+        return map;
     }
 
     @GetMapping("/device/{id}")
-    List<ScheduleEvent> getByDevice(@PathVariable String id){
+    HashMap<String, List> getByDevice(@PathVariable String id){
         Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByDeviceId(id);
-        return optional.orElse(null);
+        HashMap<String, List> map = new HashMap<>();
+        map.put("events",optional.orElse(null));
+        return map;
     }
 }
