@@ -61,8 +61,9 @@ public class ScheduleEventController {
     }
 
     @DeleteMapping("/delete/{id}")
-    ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable Integer id){
-        scheduleEventRepository.delete(id);
+    ResponseEntity delete(@PathVariable Integer id){
+        ScheduleEvent scheduleEvent = scheduleEventRepository.findOne(id);
+        if (scheduleEvent != null) scheduleEventRepository.delete(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 }
