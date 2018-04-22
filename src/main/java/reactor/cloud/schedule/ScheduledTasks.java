@@ -3,6 +3,7 @@ package reactor.cloud.schedule;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.cloud.entities.DeviceType;
@@ -77,11 +78,17 @@ public class ScheduledTasks {
             device.put(event.getAttribute_name(), event.getAttribute_value());
 
             if(event.getDeviceType().equals(DeviceType.LIGHT)){
-                deviceClient.updateLight(event.getGroupId(), event.getDeviceId());
+                if(!deviceClient.updateLight(event.getGroupId(), event.getDeviceId()).getStatusCode().equals(HttpStatus.OK)){
+                    eventQueue.add(event);
+                }
             } else if(event.getDeviceType().equals(DeviceType.OUTLET)){
-                deviceClient.updateOutlet(event.getGroupId(), event.getDeviceId());
+                if(!deviceClient.updateOutlet(event.getGroupId(), event.getDeviceId()).getStatusCode().equals(HttpStatus.OK)){
+                    eventQueue.add(event);
+                }
             } else if(event.getDeviceType().equals(DeviceType.THERMOSTAT)){
-                deviceClient.updateThermostat(event.getGroupId(), event.getDeviceId());
+                if(!deviceClient.updateThermostat(event.getGroupId(), event.getDeviceId()).getStatusCode().equals(HttpStatus.OK)){
+                    eventQueue.add(event);
+                }
             }
 
             System.out.println(event.getAttribute_name());
