@@ -6,7 +6,7 @@
 
     <groupId>com.myreactorhome</groupId>
     <artifactId>user-service</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.12</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -24,6 +24,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-security</artifactId>
             <version>1.2.1.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.turo</groupId>
+            <artifactId>pushy</artifactId>
+            <version>0.13.0</version>
         </dependency>
 
         <dependency>

@@ -1,9 +1,9 @@
 package reactor.cloud.schedule;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.cloud.entities.DeviceType;
@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
+@EnableScheduling
 public class ScheduledTasks {
 
     private final ScheduleEventRepository scheduleEventRepository;
@@ -36,11 +37,11 @@ public class ScheduledTasks {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        int hour = c.get(Calendar.HOUR);
+        int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
 
 
-        Optional<List<ScheduleEvent>> optional = null;
+        Optional<List<ScheduleEvent>> optional = Optional.empty();
         switch (dayOfWeek){
             case 1:
                 optional = scheduleEventRepository.findBySundayAndHourAndMinute(true, hour, minute);
@@ -69,24 +70,24 @@ public class ScheduledTasks {
         optional.ifPresent(scheduleEvents -> eventQueue.addAll(scheduleEvents));
     }
 
-    @Scheduled(fixedRate = 10 * 1000)
+    @Scheduled(fixedDelay = 10 * 1000)
     public void executeEvents() {
         while (!eventQueue.isEmpty()){
             ScheduleEvent event = eventQueue.remove();
 
-            ObjectNode device = deviceClient.getDevice(event.getDeviceId());
+            Map<String, Object> device = deviceClient.getDevice(event.getDeviceId());
             device.put(event.getAttribute_name(), event.getAttribute_value());
 
             if(event.getDeviceType().equals(DeviceType.LIGHT)){
-                if(!deviceClient.updateLight(event.getGroupId(), event.getDeviceId()).getStatusCode().equals(HttpStatus.OK)){
+                if(!deviceClient.updateLight(event.getGroupId(), event.getDeviceId(), device).getStatusCode().equals(HttpStatus.OK)){
                     eventQueue.add(event);
                 }
             } else if(event.getDeviceType().equals(DeviceType.OUTLET)){
-                if(!deviceClient.updateOutlet(event.getGroupId(), event.getDeviceId()).getStatusCode().equals(HttpStatus.OK)){
+                if(!deviceClient.updateOutlet(event.getGroupId(), event.getDeviceId(), device).getStatusCode().equals(HttpStatus.OK)){
                     eventQueue.add(event);
                 }
             } else if(event.getDeviceType().equals(DeviceType.THERMOSTAT)){
-                if(!deviceClient.updateThermostat(event.getGroupId(), event.getDeviceId()).getStatusCode().equals(HttpStatus.OK)){
+                if(!deviceClient.updateThermostat(event.getGroupId(), event.getDeviceId(), device).getStatusCode().equals(HttpStatus.OK)){
                     eventQueue.add(event);
                 }
             }

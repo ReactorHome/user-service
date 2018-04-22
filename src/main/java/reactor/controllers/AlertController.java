@@ -11,6 +11,7 @@ import reactor.models.Alert;
 import reactor.models.Group;
 import reactor.models.User;
 import reactor.repositories.GroupRepository;
+import reactor.services.NotificationService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,9 @@ public class AlertController {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    NotificationService notificationService;
 
     @GetMapping(path = "api/alerts/{id}")
     @PreAuthorize("isGroupMember(#groupId)")

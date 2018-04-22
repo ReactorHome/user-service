@@ -1,6 +1,7 @@
 package reactor.cloud.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +34,10 @@ public class ScheduleEventController {
     }
 
     @PostMapping("/new")
-    ResponseEntity create(@AuthenticationPrincipal User user, @RequestBody ScheduleEvent scheduleEvent, OAuth2Authentication auth){
-        final OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-        String token = details.getTokenValue();
-        token = "Bearer " + token;
+    ResponseEntity create(@AuthenticationPrincipal User user, @RequestBody ScheduleEvent scheduleEvent){
 
-        ObjectNode device = deviceClient.getDevice(token, scheduleEvent.getDeviceId());
-        scheduleEvent.setDeviceName(device.get("name").asText());
+        Map<String, Object> device = deviceClient.getDevice(scheduleEvent.getDeviceId());
+        scheduleEvent.setDeviceName((String)device.get("name"));
 
         scheduleEventRepository.save(scheduleEvent);
 
