@@ -45,7 +45,7 @@ public class ScheduleEventController {
     }
 
     @GetMapping("/group/{id}")
-    HashMap<String,List> getByGroup(@PathVariable Integer id){
+    HashMap<String,List> getByGroup(@AuthenticationPrincipal User user, @PathVariable Integer id){
         Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByGroupId(id);
         HashMap<String, List> map = new HashMap<>();
         map.put("events",optional.orElse(null));
@@ -53,10 +53,16 @@ public class ScheduleEventController {
     }
 
     @GetMapping("/device/{id}")
-    HashMap<String, List> getByDevice(@PathVariable String id){
+    HashMap<String, List> getByDevice(@AuthenticationPrincipal User user, @PathVariable String id){
         Optional<List<ScheduleEvent>> optional = scheduleEventRepository.findByDeviceId(id);
         HashMap<String, List> map = new HashMap<>();
         map.put("events",optional.orElse(null));
         return map;
+    }
+
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable Integer id){
+        scheduleEventRepository.delete(id);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

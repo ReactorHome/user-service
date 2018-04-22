@@ -7,7 +7,7 @@ public class ScheduleEvent {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private Integer id;
     private String deviceName;
     private DeviceType deviceType;
 
@@ -46,11 +46,11 @@ public class ScheduleEvent {
         this.sunday = sunday;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
