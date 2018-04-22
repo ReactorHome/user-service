@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.exceptions.ModelNotFoundException;
 import reactor.models.Alert;
 import reactor.models.Group;
+import reactor.models.NotificationId;
 import reactor.models.User;
 import reactor.repositories.GroupRepository;
 import reactor.services.NotificationService;
@@ -16,6 +17,7 @@ import reactor.services.NotificationService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class AlertController {
@@ -41,6 +43,11 @@ public class AlertController {
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new ModelNotFoundException("group"));
         group.getAlerts().add(alert);
         groupRepository.save(group);
+
+        group.getAccountList()
+                .stream()
+                .flatMap((account -> account.getNotificationIdList().stream()))
+                .forEach((notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), alert.getData())));
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
