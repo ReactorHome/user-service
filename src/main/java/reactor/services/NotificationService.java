@@ -42,7 +42,7 @@ public class NotificationService implements DisposableBean {
         try {
             this.client = new ApnsClientBuilder()
                     .setApnsServer(ApnsClientBuilder.DEVELOPMENT_APNS_HOST)
-                    .setClientCredentials(cert.getFile(), "")
+                    .setClientCredentials(cert.getInputStream(), "")
                     .build();
         } catch (IOException e) {
             e.printStackTrace();
