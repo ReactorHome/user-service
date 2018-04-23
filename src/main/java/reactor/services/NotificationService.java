@@ -60,6 +60,7 @@ public class NotificationService implements DisposableBean {
         final PushNotificationFuture<SimpleApnsPushNotification, PushNotificationResponse<SimpleApnsPushNotification>>
                 sendNotificationFuture = client.sendNotification(pushNotification);
 
+        System.out.println("Preparing to send notification to " + sanitizedToken);
         sendNotificationFuture.addListener((PushNotificationResponseListener<SimpleApnsPushNotification>) future -> {
             // When using a listener, callers should check for a failure to send a
             // notification by checking whether the future itself was successful

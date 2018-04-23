@@ -13,6 +13,7 @@ import reactor.cloud.repositories.FaceRepository;
 import reactor.models.Alert;
 import reactor.models.Face;
 import reactor.models.Group;
+import reactor.models.NotificationId;
 import reactor.repositories.AlertRepository;
 import reactor.repositories.GroupRepository;
 import reactor.services.NotificationService;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/cloud/face")
@@ -80,10 +82,13 @@ public class FaceServiceController {
             Alert alert = new Alert(0, data, raw, fileName, System.currentTimeMillis(), null);
             final String notificationData = data;
             group.getAlerts().add(alert);
-            group.getAccountList()
+            Stream<NotificationId> notificationIdStream = group.getAccountList()
                     .stream()
-                    .flatMap(account -> account.getNotificationIdList().stream())
-                    .forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), notificationData));
+                    .flatMap(account -> account.getNotificationIdList().stream());
+            Stream<NotificationId> ownerNotificaitonIdStream = group.getOwner().getNotificationIdList().stream();
+            Stream<NotificationId> notificationIds = Stream.concat(notificationIdStream, ownerNotificaitonIdStream);
+            System.out.println(notificationIds.count());
+            notificationIds.forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), notificationData));
             groupRepository.save(group);
 
             return new ResponseEntity(HttpStatus.OK);
@@ -91,10 +96,13 @@ public class FaceServiceController {
             String data = "WARNING: A visitor was detected but an error occurred";
             Alert alert = new Alert(0, data, null, null, 0, null);
             group.getAlerts().add(alert);
-            group.getAccountList()
+            Stream<NotificationId> notificationIdStream = group.getAccountList()
                     .stream()
-                    .flatMap(account -> account.getNotificationIdList().stream())
-                    .forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), data));
+                    .flatMap(account -> account.getNotificationIdList().stream());
+            Stream<NotificationId> ownerNotificaitonIdStream = group.getOwner().getNotificationIdList().stream();
+            Stream<NotificationId> notificationIds = Stream.concat(notificationIdStream, ownerNotificaitonIdStream);
+            System.out.println(notificationIds.count());
+            notificationIds.forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), data));
             groupRepository.save(group);
 
 

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class AlertController {
@@ -44,10 +45,13 @@ public class AlertController {
         group.getAlerts().add(alert);
         groupRepository.save(group);
 
-        group.getAccountList()
+        Stream<NotificationId> notificationIdStream = group.getAccountList()
                 .stream()
-                .flatMap((account -> account.getNotificationIdList().stream()))
-                .forEach((notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), alert.getData())));
+                .flatMap(account -> account.getNotificationIdList().stream());
+        Stream<NotificationId> ownerNotificaitonIdStream = group.getOwner().getNotificationIdList().stream();
+        Stream<NotificationId> notificationIds = Stream.concat(notificationIdStream, ownerNotificaitonIdStream);
+        System.out.println(notificationIds.count());
+        notificationIds.forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), alert.getData()));
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
