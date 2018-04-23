@@ -15,6 +15,7 @@ import reactor.models.Face;
 import reactor.models.Group;
 import reactor.repositories.AlertRepository;
 import reactor.repositories.GroupRepository;
+import reactor.services.NotificationService;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,14 +32,15 @@ public class FaceServiceController {
     private final FaceRepository faceRepository;
     private final GroupRepository groupRepository;
     private final AlertRepository alertRepository;
-
+    private final NotificationService notificationService;
 
     @Autowired
-    public FaceServiceController(FaceClient faceClient, FaceRepository faceRepository, GroupRepository groupRepository, AlertRepository alertRepository) {
+    public FaceServiceController(FaceClient faceClient, FaceRepository faceRepository, GroupRepository groupRepository, AlertRepository alertRepository, NotificationService notificationService) {
         this.faceClient = faceClient;
         this.faceRepository = faceRepository;
         this.groupRepository = groupRepository;
         this.alertRepository = alertRepository;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/classify")
@@ -76,7 +78,12 @@ public class FaceServiceController {
 
 
             Alert alert = new Alert(0, data, raw, fileName, System.currentTimeMillis(), null);
+            final String notificationData = data;
             group.getAlerts().add(alert);
+            group.getAccountList()
+                    .stream()
+                    .flatMap(account -> account.getNotificationIdList().stream())
+                    .forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), notificationData));
             groupRepository.save(group);
 
             return new ResponseEntity(HttpStatus.OK);
@@ -84,7 +91,12 @@ public class FaceServiceController {
             String data = "WARNING: A visitor was detected but an error occurred";
             Alert alert = new Alert(0, data, null, null, 0, null);
             group.getAlerts().add(alert);
+            group.getAccountList()
+                    .stream()
+                    .flatMap(account -> account.getNotificationIdList().stream())
+                    .forEach(notificationId -> notificationService.sendNotification(notificationId.getNotificationAddress(), data));
             groupRepository.save(group);
+
 
             return new ResponseEntity(HttpStatus.PAYLOAD_TOO_LARGE);
         }
