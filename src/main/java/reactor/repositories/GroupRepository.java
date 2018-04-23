@@ -12,4 +12,5 @@ public interface GroupRepository extends CrudRepository<Group, Integer> {
     Optional<Group> findById(Integer id);
     List<Group> findByOwnerIs(Account owner);
     List<Group> findByAccountListIs(Account account);
+    List<Group> findByAccountListContaining(Account account);
 }
